@@ -20,6 +20,12 @@ Build a quiz, share its link, and see who's taken it and how they scored.
 - **Frontend** — Next.js (App Router) + React, Tailwind CSS, react-hook-form + zod.
 - **Backend** — NestJS + Prisma + PostgreSQL.
 
+## Authentication
+
+Authentication is intentionally not implemented because it is outside the scope of the assessment requirements. The application currently treats quizzes as shared resources.
+
+In a production version, I would add authentication and quiz ownership so users could only modify or delete quizzes they own.
+
 ## Run everything with Docker (recommended)
 
 Needs Docker.
