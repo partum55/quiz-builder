@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum QuestionType {
+  BOOLEAN
+  INPUT
+  CHECKBOX
+}
+
+model Quiz {
+  id          String       @id @default(cuid())
+  title       String
+  createdAt   DateTime     @default(now())
+  questions   Question[]
+  submissions Submission[]
+}
+
+model Question {
+  id             String       @id @default(cuid())
+  quiz           Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quizId         String
+  text           String
+  type           QuestionType
+  order          Int
+
+  // BOOLEAN
+  correctBoolean Boolean?
+
+  // INPUT
+  correctText    String?
+
+  // CHECKBOX
+  options        Json?
+  correctOptions Json?
+}
+
+model Submission {
+  id             String   @id @default(cuid())
+  quiz           Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quizId         String
+  respondentName String
+  answers        Json
+  score          Int?
+  submittedAt    DateTime @default(now())
+}

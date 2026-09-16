@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f6f7f8; /* page canvas */
+  --color-surface: #ffffff; /* panel/input surface */
+  --color-border: #dfe3e8; /* hairline borders/dividers */
+  --color-ink: #14181f; /* primary text */
+  --color-ink-muted: #69707c; /* secondary/meta text */
+  --color-accent: #4f6f52; /* primary interactive: buttons, links, focus ring, checked state — moss green */
+  --color-accent-hover: #3d5941;
+  --color-accent-soft: #e3ebe0; /* badge/tint backgrounds */
+  --color-danger: #c53d2b; /* destructive actions only */
+  --color-danger-soft: #fbe4e0;
+  --color-correct: var(--color-accent); /* "this answer is correct" reuses the brand green — in a quiz tool, green already means "right, go" */
+
+  --font-serif: var(--font-sans);
+  --font-sans: var(--font-manrope);
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-elevated: 0 12px 32px -12px rgba(35, 31, 24, 0.22);
+
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Visible keyboard-only focus ring, consistent across every interactive element. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/*
+ * Dialog enter/exit transition. Hand-written (rather than Tailwind data-variant
+ * stacking with ::backdrop) because a pseudo-element + data-attribute compound
+ * selector is safer to reason about here than relying on arbitrary-variant
+ * ordering.
+ */
+.qb-dialog {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
+}
+.qb-dialog[data-state="open"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.qb-dialog::backdrop {
+  background: rgba(42, 40, 32, 0.35);
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+.qb-dialog[data-state="open"]::backdrop {
+  opacity: 1;
+}
+
+/*
+ * Reduced motion: collapse all transitions/animations to near-zero, EXCEPT
+ * elements carrying [data-spinner] — a loading spinner's rotation is
+ * functional feedback (communicates "still working"), not decoration, so it
+ * is deliberately exempted here rather than an oversight.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *:not([data-spinner]),
+  *:not([data-spinner])::before,
+  *:not([data-spinner])::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .qb-dialog,
+  .qb-dialog::backdrop {
+    transition-duration: 0.01ms !important;
+  }
+}

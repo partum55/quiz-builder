@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-quiz}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-quiz}
+      POSTGRES_DB: ${POSTGRES_DB:-quizdb}
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-quiz} -d ${POSTGRES_DB:-quizdb}']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-quiz}:${POSTGRES_PASSWORD:-quiz}@db:5432/${POSTGRES_DB:-quizdb}?schema=public
+      PORT: ${BACKEND_PORT:-8000}
+    ports:
+      - '${BACKEND_PORT:-8000}:${BACKEND_PORT:-8000}'
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # Server-side (SSR) fetches run inside this container and need the Docker-network
+      # hostname; the browser uses NEXT_PUBLIC_API_URL (baked in at build time) instead.
+      INTERNAL_API_URL: http://backend:${BACKEND_PORT:-8000}
+      PORT: ${FRONTEND_PORT:-3000}
+    ports:
+      - '${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}'
+
+volumes:
+  pgdata:
