@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { ClipboardList } from "lucide-react";
 import type { ReactNode } from "react";
 
 export interface SiteHeaderProps {
@@ -13,7 +13,7 @@ export function SiteHeader({ action }: SiteHeaderProps) {
     <header className="sticky top-0 z-40 border-b border-border border-t-2 border-t-accent bg-paper/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[720px] items-center justify-between px-5 py-4 sm:px-8">
         <Link href="/" className="flex items-center gap-2 font-serif text-lg font-medium text-ink">
-          <ClipboardList className="h-5 w-5 text-accent" aria-hidden="true" />
+          <Image src="/logo.svg" alt="" width={20} height={20} priority />
           Quiz Builder
         </Link>
         {action}
