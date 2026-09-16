@@ -1,7 +1,13 @@
 import Link, { type LinkProps } from "next/link";
-import { forwardRef, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type ReactNode } from "react";
+import {
+  forwardRef,
+  type AnchorHTMLAttributes,
+  type ButtonHTMLAttributes,
+  type ReactNode,
+} from "react";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger-ghost" | "danger";
+export type ButtonVariant =
+  "primary" | "secondary" | "ghost" | "danger-ghost" | "danger";
 export type ButtonSize = "md" | "sm";
 
 const base =
@@ -21,7 +27,10 @@ const sizeStyles: Record<ButtonSize, string> = {
 };
 
 /** Shared class-string builder used by both `Button` and `LinkButton` so their visuals never drift apart. */
-export function buttonStyles(variant: ButtonVariant = "primary", size: ButtonSize = "md"): string {
+export function buttonStyles(
+  variant: ButtonVariant = "primary",
+  size: ButtonSize = "md",
+): string {
   return `${base} ${variantStyles[variant]} ${sizeStyles[size]}`;
 }
 
@@ -34,7 +43,14 @@ function Spinner() {
       fill="none"
       aria-hidden="true"
     >
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+      />
       <path
         className="opacity-75"
         fill="currentColor"
@@ -52,26 +68,41 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = "primary", size = "md", loading = false, icon, disabled, className = "", children, type, ...props },
-  ref,
-) {
-  return (
-    <button
-      ref={ref}
-      type={type ?? "button"}
-      aria-busy={loading || undefined}
-      disabled={disabled || loading}
-      className={`${buttonStyles(variant, size)} ${className}`}
-      {...props}
-    >
-      {loading ? <Spinner /> : icon}
-      {children}
-    </button>
-  );
-});
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  function Button(
+    {
+      variant = "primary",
+      size = "md",
+      loading = false,
+      icon,
+      disabled,
+      className = "",
+      children,
+      type,
+      ...props
+    },
+    ref,
+  ) {
+    return (
+      <button
+        ref={ref}
+        type={type ?? "button"}
+        aria-busy={loading || undefined}
+        disabled={disabled || loading}
+        className={`${buttonStyles(variant, size)} ${className}`}
+        {...props}
+      >
+        {loading ? <Spinner /> : icon}
+        {children}
+      </button>
+    );
+  },
+);
 
-export interface LinkButtonProps extends LinkProps, Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> {
+export interface LinkButtonProps
+  extends
+    LinkProps,
+    Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof LinkProps> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   className?: string;
@@ -81,16 +112,29 @@ export interface LinkButtonProps extends LinkProps, Omit<AnchorHTMLAttributes<HT
 }
 
 /** A Next `<Link>` visually styled as a `Button`, for navigation that should look like an action. */
-export const LinkButton = forwardRef<HTMLAnchorElement, LinkButtonProps>(function LinkButton(
-  { variant = "primary", size = "md", className = "", children, icon, ...props },
-  ref,
-) {
-  return (
-    <Link ref={ref} className={`${buttonStyles(variant, size)} ${className}`} {...props}>
-      {icon}
-      {children}
-    </Link>
-  );
-});
+export const LinkButton = forwardRef<HTMLAnchorElement, LinkButtonProps>(
+  function LinkButton(
+    {
+      variant = "primary",
+      size = "md",
+      className = "",
+      children,
+      icon,
+      ...props
+    },
+    ref,
+  ) {
+    return (
+      <Link
+        ref={ref}
+        className={`${buttonStyles(variant, size)} ${className}`}
+        {...props}
+      >
+        {icon}
+        {children}
+      </Link>
+    );
+  },
+);
 
 export default Button;

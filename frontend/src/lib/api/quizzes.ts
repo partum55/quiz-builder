@@ -8,11 +8,16 @@ import type {
   SubmissionSummary,
 } from "./types";
 
-export function listQuizzes(init: RequestInit = { cache: "no-store" }): Promise<QuizSummary[]> {
+export function listQuizzes(
+  init: RequestInit = { cache: "no-store" },
+): Promise<QuizSummary[]> {
   return apiFetch<QuizSummary[]>("/quizzes", init);
 }
 
-export function getQuiz(id: string, init: RequestInit = { cache: "no-store" }): Promise<QuizDetail> {
+export function getQuiz(
+  id: string,
+  init: RequestInit = { cache: "no-store" },
+): Promise<QuizDetail> {
   return apiFetch<QuizDetail>(`/quizzes/${id}`, init);
 }
 
@@ -23,7 +28,10 @@ export function createQuiz(input: CreateQuizInput): Promise<QuizDetail> {
   });
 }
 
-export function updateQuiz(id: string, input: CreateQuizInput): Promise<QuizDetail> {
+export function updateQuiz(
+  id: string,
+  input: CreateQuizInput,
+): Promise<QuizDetail> {
   return apiFetch<QuizDetail>(`/quizzes/${id}`, {
     method: "PATCH",
     body: JSON.stringify(input),
@@ -34,7 +42,10 @@ export function deleteQuiz(id: string): Promise<void> {
   return apiFetch<void>(`/quizzes/${id}`, { method: "DELETE" });
 }
 
-export function submitQuiz(quizId: string, input: SubmissionInput): Promise<SubmissionCreated> {
+export function submitQuiz(
+  quizId: string,
+  input: SubmissionInput,
+): Promise<SubmissionCreated> {
   return apiFetch<SubmissionCreated>(`/quizzes/${quizId}/submissions`, {
     method: "POST",
     body: JSON.stringify(input),

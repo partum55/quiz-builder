@@ -21,7 +21,9 @@ export function SubmissionsList({
           key={submission.id}
           className="flex items-center justify-between gap-3 border-t border-border py-4 first:border-t-0 first:pt-0"
         >
-          <span className="text-sm font-medium text-ink">{submission.respondentName}</span>
+          <span className="text-sm font-medium text-ink">
+            {submission.respondentName}
+          </span>
           <span className="flex items-center gap-3 text-sm text-ink-muted">
             <span className="font-medium text-correct">
               {submission.score}/{questionCount}

@@ -1,7 +1,15 @@
 "use client";
 
 import { AlertCircle, CheckCircle2 } from "lucide-react";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 export type ToastVariant = "success" | "error";
 
@@ -23,7 +31,13 @@ const EXIT_MS = 200;
 
 let nextId = 0;
 
-function ToastRow({ toast, onDone }: { toast: ToastItem; onDone: (id: number) => void }) {
+function ToastRow({
+  toast,
+  onDone,
+}: {
+  toast: ToastItem;
+  onDone: (id: number) => void;
+}) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -63,9 +77,12 @@ function ToastRow({ toast, onDone }: { toast: ToastItem; onDone: (id: number) =>
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  const show = useCallback((message: string, variant: ToastVariant = "success") => {
-    setToasts((current) => [...current, { id: nextId++, message, variant }]);
-  }, []);
+  const show = useCallback(
+    (message: string, variant: ToastVariant = "success") => {
+      setToasts((current) => [...current, { id: nextId++, message, variant }]);
+    },
+    [],
+  );
 
   const remove = useCallback((id: number) => {
     setToasts((current) => current.filter((toast) => toast.id !== id));

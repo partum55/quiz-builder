@@ -3,7 +3,11 @@ import { getQuiz } from "@/lib/api/quizzes";
 import { ApiError } from "@/lib/api/client";
 import { TakeQuizFlow } from "./_components/TakeQuizFlow";
 
-export default async function TakeQuizPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TakeQuizPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   let quiz;

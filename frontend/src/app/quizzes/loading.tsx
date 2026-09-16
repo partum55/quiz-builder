@@ -10,7 +10,7 @@ export default function QuizzesLoading() {
     <>
       <SiteHeader
         action={
-          <LinkButton href="/quizzes/new" icon={<Plus />}>
+          <LinkButton href="/create" icon={<Plus />}>
             New quiz
           </LinkButton>
         }
@@ -20,7 +20,10 @@ export default function QuizzesLoading() {
         <Skeleton className="mt-2 h-4 w-20" />
         <Card className="mt-6 overflow-hidden p-0">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-4 border-t border-border px-5 py-4 first:border-t-0">
+            <div
+              key={i}
+              className="flex items-center gap-4 border-t border-border px-5 py-4 first:border-t-0"
+            >
               <Skeleton className="h-9 w-9 shrink-0 rounded-md" />
               <div className="min-w-0 flex-1">
                 <Skeleton className="h-5 w-2/3" />

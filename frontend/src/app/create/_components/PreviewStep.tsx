@@ -10,7 +10,11 @@ import { QuestionList } from "@/components/quiz/QuestionList";
 import { ApiError } from "@/lib/api/client";
 import { createQuiz, updateQuiz } from "@/lib/api/quizzes";
 import { DRAFT_STORAGE_KEY } from "./NewQuizWizard";
-import { toCreateQuizInput, toQuestionResponses, type QuizFormValues } from "./formSchema";
+import {
+  toCreateQuizInput,
+  toQuestionResponses,
+  type QuizFormValues,
+} from "./formSchema";
 
 /** Recursively counts leaf error messages in an RHF error tree — not pixel-perfect, just enough to tell the user "N issues". */
 function countFieldErrors(errors: FieldErrors): number {
@@ -70,7 +74,12 @@ export function PreviewStep({ quizId }: { quizId?: string } = {}) {
       if (error instanceof ApiError) {
         setSubmitError(error.messages);
       } else {
-        toast.show(quizId ? "Couldn't save changes. Try again." : "Couldn't create this quiz. Try again.", "error");
+        toast.show(
+          quizId
+            ? "Couldn't save changes. Try again."
+            : "Couldn't create this quiz. Try again.",
+          "error",
+        );
       }
       setSubmitting(false);
     }
@@ -79,17 +88,25 @@ export function PreviewStep({ quizId }: { quizId?: string } = {}) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h2 className="font-serif text-lg text-ink">{values.title || "Untitled quiz"}</h2>
+        <h2 className="font-serif text-lg text-ink">
+          {values.title || "Untitled quiz"}
+        </h2>
         <p className="mt-1 text-sm text-ink-muted">
-          {values.questions.length} question{values.questions.length === 1 ? "" : "s"}
+          {values.questions.length} question
+          {values.questions.length === 1 ? "" : "s"}
         </p>
       </div>
 
       <QuestionList questions={toQuestionResponses(values.questions)} />
 
       {submitError && (
-        <div role="alert" className="rounded-md border border-danger bg-danger-soft p-4 text-sm text-danger">
-          <p className="font-medium">{quizId ? "Couldn't save changes" : "Couldn't create this quiz"}</p>
+        <div
+          role="alert"
+          className="rounded-md border border-danger bg-danger-soft p-4 text-sm text-danger"
+        >
+          <p className="font-medium">
+            {quizId ? "Couldn't save changes" : "Couldn't create this quiz"}
+          </p>
           <ul className="mt-1 list-disc pl-5">
             {submitError.map((message) => (
               <li key={message}>{message}</li>
@@ -107,11 +124,18 @@ export function PreviewStep({ quizId }: { quizId?: string } = {}) {
           disabled={!canPublish}
           onClick={onPublish}
         >
-          {quizId ? (submitting ? "Saving…" : "Save changes") : submitting ? "Publishing…" : "Publish quiz"}
+          {quizId
+            ? submitting
+              ? "Saving…"
+              : "Save changes"
+            : submitting
+              ? "Publishing…"
+              : "Publish quiz"}
         </Button>
         {!canPublish && (
           <p className="text-xs text-danger">
-            Fix {errorCount} issue{errorCount === 1 ? "" : "s"} before {quizId ? "saving" : "publishing"}.
+            Fix {errorCount} issue{errorCount === 1 ? "" : "s"} before{" "}
+            {quizId ? "saving" : "publishing"}.
           </p>
         )}
       </div>

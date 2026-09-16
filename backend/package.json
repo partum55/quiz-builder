@@ -22,7 +22,8 @@
     "pretest:e2e": "node scripts/setup-test-db.js",
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
     "db:start": "docker compose up -d",
-    "db:stop": "docker compose down"
+    "db:stop": "docker compose down",
+    "seed": "node scripts/seed.js"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

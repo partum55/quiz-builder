@@ -1,5 +1,9 @@
 import { z } from "zod";
-import type { CreateQuizInput, QuestionInput, QuestionResponse } from "@/lib/api/types";
+import type {
+  CreateQuizInput,
+  QuestionInput,
+  QuestionResponse,
+} from "@/lib/api/types";
 
 /**
  * Form-only (UI) schema. A CHECKBOX question's options are tracked as
@@ -22,7 +26,10 @@ const textField = (label: string) =>
     .string()
     .trim()
     .min(1, `${label} is required`)
-    .max(MAX_TEXT_LENGTH, `${label} must be ${MAX_TEXT_LENGTH} characters or fewer`);
+    .max(
+      MAX_TEXT_LENGTH,
+      `${label} must be ${MAX_TEXT_LENGTH} characters or fewer`,
+    );
 
 const booleanQuestionUi = z.object({
   type: z.literal("BOOLEAN"),
@@ -48,16 +55,22 @@ const checkboxQuestionUi = z
     options: z
       .array(checkboxOptionUi)
       .min(2, "Add at least 2 options")
-      .max(MAX_OPTIONS_PER_QUESTION, `You can add up to ${MAX_OPTIONS_PER_QUESTION} options`),
+      .max(
+        MAX_OPTIONS_PER_QUESTION,
+        `You can add up to ${MAX_OPTIONS_PER_QUESTION} options`,
+      ),
   })
   .refine((q) => q.options.some((o) => o.correct), {
     message: "Select at least one correct answer",
     path: ["options"],
   })
-  .refine((q) => new Set(q.options.map((o) => o.value)).size === q.options.length, {
-    message: "Options must be unique",
-    path: ["options"],
-  });
+  .refine(
+    (q) => new Set(q.options.map((o) => o.value)).size === q.options.length,
+    {
+      message: "Options must be unique",
+      path: ["options"],
+    },
+  );
 
 /** Exported so the wizard can check "is this one question valid?" (Questions step completion) without duplicating the union. */
 export const questionUiSchema = z.discriminatedUnion("type", [
@@ -71,7 +84,10 @@ export const quizFormSchema = z.object({
   questions: z
     .array(questionUiSchema)
     .min(1, "Add at least one question")
-    .max(MAX_QUESTIONS_PER_QUIZ, `You can add up to ${MAX_QUESTIONS_PER_QUIZ} questions`),
+    .max(
+      MAX_QUESTIONS_PER_QUIZ,
+      `You can add up to ${MAX_QUESTIONS_PER_QUIZ} questions`,
+    ),
 });
 
 export type QuizFormValues = z.infer<typeof quizFormSchema>;
@@ -79,7 +95,10 @@ export type QuestionFormValues = QuizFormValues["questions"][number];
 export type QuestionFormType = QuestionFormValues["type"];
 
 /** Fresh default object for a question of the given type — used both for "Add question" and for a type switch (see QuestionsStep/QuestionCard: switching type replaces the whole object via `update`, never patches individual fields across a shape change). */
-export function defaultQuestion(type: QuestionFormType, text = ""): QuestionFormValues {
+export function defaultQuestion(
+  type: QuestionFormType,
+  text = "",
+): QuestionFormValues {
   switch (type) {
     case "BOOLEAN":
       return { type: "BOOLEAN", text, correctBoolean: true };
@@ -120,23 +139,36 @@ export function toCreateQuizInput(values: QuizFormValues): CreateQuizInput {
 function fromQuestionResponse(question: QuestionResponse): QuestionFormValues {
   switch (question.type) {
     case "BOOLEAN":
-      return { type: "BOOLEAN", text: question.text, correctBoolean: question.correctBoolean ?? true };
+      return {
+        type: "BOOLEAN",
+        text: question.text,
+        correctBoolean: question.correctBoolean ?? true,
+      };
     case "INPUT":
-      return { type: "INPUT", text: question.text, correctText: question.correctText ?? "" };
+      return {
+        type: "INPUT",
+        text: question.text,
+        correctText: question.correctText ?? "",
+      };
     case "CHECKBOX": {
       const options = question.options ?? [];
       const correct = new Set(question.correctOptions ?? []);
       return {
         type: "CHECKBOX",
         text: question.text,
-        options: options.map((value) => ({ value, correct: correct.has(value) })),
+        options: options.map((value) => ({
+          value,
+          correct: correct.has(value),
+        })),
       };
     }
   }
 }
 
 /** Adapts a persisted quiz's questions into wizard form values, for editing. */
-export function fromQuestionResponses(questions: QuestionResponse[]): QuestionFormValues[] {
+export function fromQuestionResponses(
+  questions: QuestionResponse[],
+): QuestionFormValues[] {
   return questions.map(fromQuestionResponse);
 }
 
@@ -146,7 +178,9 @@ export function fromQuestionResponses(questions: QuestionResponse[]): QuestionFo
  * can reuse it. `id`/`order` are synthetic (array index) since nothing here is
  * persisted yet.
  */
-export function toQuestionResponses(questions: QuestionFormValues[]): QuestionResponse[] {
+export function toQuestionResponses(
+  questions: QuestionFormValues[],
+): QuestionResponse[] {
   return questions.map((q, index) => {
     const input = toQuestionInput(q);
     return {

@@ -5,9 +5,13 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { getQuiz } from "@/lib/api/quizzes";
 import { ApiError } from "@/lib/api/client";
-import { NewQuizWizard } from "../../new/_components/NewQuizWizard";
+import { NewQuizWizard } from "../../../create/_components/NewQuizWizard";
 
-export default async function EditQuizPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditQuizPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   let quiz;
@@ -24,7 +28,11 @@ export default async function EditQuizPage({ params }: { params: Promise<{ id: s
     <>
       <SiteHeader
         action={
-          <LinkButton href={`/quizzes/${id}`} variant="ghost" icon={<ArrowLeft />}>
+          <LinkButton
+            href={`/quizzes/${id}`}
+            variant="ghost"
+            icon={<ArrowLeft />}
+          >
             Back to quiz
           </LinkButton>
         }

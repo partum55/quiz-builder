@@ -29,16 +29,23 @@ function CheckboxAnswer({ question }: { question: QuestionResponse }) {
               <span aria-hidden="true" className="w-4 text-correct">
                 {isCorrect ? "✓" : ""}
               </span>
-              <span className={isCorrect ? "font-medium text-ink" : "text-ink-muted"}>
+              <span
+                className={
+                  isCorrect ? "font-medium text-ink" : "text-ink-muted"
+                }
+              >
                 {option}
-                <span className="sr-only">{isCorrect ? " (correct answer)" : " (not a correct answer)"}</span>
+                <span className="sr-only">
+                  {isCorrect ? " (correct answer)" : " (not a correct answer)"}
+                </span>
               </span>
             </li>
           );
         })}
       </ul>
       <p className="mt-2 text-sm text-ink-muted">
-        Correct answer{correct.length === 1 ? "" : "s"}: <span className="text-ink">{correct.join(", ")}</span>
+        Correct answer{correct.length === 1 ? "" : "s"}:{" "}
+        <span className="text-ink">{correct.join(", ")}</span>
       </p>
     </div>
   );
@@ -47,9 +54,15 @@ function CheckboxAnswer({ question }: { question: QuestionResponse }) {
 function Answer({ question }: { question: QuestionResponse }) {
   switch (question.type) {
     case "BOOLEAN":
-      return <p className="mt-2 text-sm text-ink">Answer: {question.correctBoolean ? "Yes" : "No"}</p>;
+      return (
+        <p className="mt-2 text-sm text-ink">
+          Answer: {question.correctBoolean ? "Yes" : "No"}
+        </p>
+      );
     case "INPUT":
-      return <p className="mt-2 text-sm text-ink">Answer: {question.correctText}</p>;
+      return (
+        <p className="mt-2 text-sm text-ink">Answer: {question.correctText}</p>
+      );
     case "CHECKBOX":
       return <CheckboxAnswer question={question} />;
   }
@@ -59,7 +72,10 @@ export function QuestionList({ questions }: { questions: QuestionResponse[] }) {
   return (
     <ol className="flex flex-col">
       {questions.map((question, index) => (
-        <li key={question.id} className="border-t border-border py-6 first:border-t-0 first:pt-0">
+        <li
+          key={question.id}
+          className="border-t border-border py-6 first:border-t-0 first:pt-0"
+        >
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm font-medium text-ink">
               {index + 1}. {question.text}

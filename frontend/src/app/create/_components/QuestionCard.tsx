@@ -2,13 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { Controller, useFormContext, useWatch, type UseFieldArrayUpdate } from "react-hook-form";
+import {
+  Controller,
+  useFormContext,
+  useWatch,
+  type UseFieldArrayUpdate,
+} from "react-hook-form";
 import Button from "@/components/ui/Button";
 import FormField from "@/components/ui/FormField";
 import Input from "@/components/ui/Input";
 import SegmentedControl from "@/components/ui/SegmentedControl";
 import { CheckboxOptions } from "./CheckboxOptions";
-import { MAX_TEXT_LENGTH, defaultQuestion, type QuestionFormType, type QuizFormValues } from "./formSchema";
+import {
+  MAX_TEXT_LENGTH,
+  defaultQuestion,
+  type QuestionFormType,
+  type QuizFormValues,
+} from "./formSchema";
 
 const TYPE_OPTIONS: { value: QuestionFormType; label: string }[] = [
   { value: "BOOLEAN", label: "Yes/No" },
@@ -63,7 +73,9 @@ export function QuestionCard({
       }`}
     >
       <div className="flex items-center justify-between gap-2">
-        <h2 className="font-serif text-lg text-ink">Question {questionIndex + 1}</h2>
+        <h2 className="font-serif text-lg text-ink">
+          Question {questionIndex + 1}
+        </h2>
         <Button
           type="button"
           variant="danger-ghost"

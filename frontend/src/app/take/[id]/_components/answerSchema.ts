@@ -15,20 +15,26 @@ export function buildAnswerSchema(questions: QuestionResponse[]) {
   for (const question of questions) {
     switch (question.type) {
       case "BOOLEAN":
-        shape[question.id] = z.enum(["yes", "no"], { message: "Answer this question" });
+        shape[question.id] = z.enum(["yes", "no"], {
+          message: "Answer this question",
+        });
         break;
       case "INPUT":
         shape[question.id] = z.string().trim().min(1, "Answer this question");
         break;
       case "CHECKBOX":
-        shape[question.id] = z.array(z.string()).min(1, "Select at least one option");
+        shape[question.id] = z
+          .array(z.string())
+          .min(1, "Select at least one option");
         break;
     }
   }
   return z.object(shape);
 }
 
-export function defaultAnswerValues(questions: QuestionResponse[]): AnswerFormValues {
+export function defaultAnswerValues(
+  questions: QuestionResponse[],
+): AnswerFormValues {
   const values: AnswerFormValues = {};
   for (const question of questions) {
     values[question.id] = question.type === "CHECKBOX" ? [] : "";
@@ -37,7 +43,10 @@ export function defaultAnswerValues(questions: QuestionResponse[]): AnswerFormVa
 }
 
 /** Flattens the per-question-type UI values into the wire shape the submissions API expects. */
-export function toAnswerInputs(questions: QuestionResponse[], values: AnswerFormValues): AnswerInput[] {
+export function toAnswerInputs(
+  questions: QuestionResponse[],
+  values: AnswerFormValues,
+): AnswerInput[] {
   return questions.map((question) => {
     const value = values[question.id];
     switch (question.type) {

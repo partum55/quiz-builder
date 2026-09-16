@@ -28,14 +28,27 @@ export function QuizDetailTabs({
         activeId={activeTab}
         onChange={(id) => setActiveTab(id as TabId)}
       />
-      <div role="tabpanel" id="preview-panel" aria-labelledby="preview-tab" hidden={activeTab !== "preview"}>
+      <div
+        role="tabpanel"
+        id="preview-panel"
+        aria-labelledby="preview-tab"
+        hidden={activeTab !== "preview"}
+      >
         <Card className="overflow-hidden p-5">
           <QuestionList questions={questions} />
         </Card>
       </div>
-      <div role="tabpanel" id="results-panel" aria-labelledby="results-tab" hidden={activeTab !== "results"}>
+      <div
+        role="tabpanel"
+        id="results-panel"
+        aria-labelledby="results-tab"
+        hidden={activeTab !== "results"}
+      >
         <Card className="overflow-hidden p-5">
-          <SubmissionsList submissions={submissions} questionCount={questions.length} />
+          <SubmissionsList
+            submissions={submissions}
+            questionCount={questions.length}
+          />
         </Card>
       </div>
     </div>

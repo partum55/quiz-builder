@@ -11,7 +11,9 @@
   --color-accent-soft: #e3ebe0; /* badge/tint backgrounds */
   --color-danger: #c53d2b; /* destructive actions only */
   --color-danger-soft: #fbe4e0;
-  --color-correct: var(--color-accent); /* "this answer is correct" reuses the brand green — in a quiz tool, green already means "right, go" */
+  --color-correct: var(
+    --color-accent
+  ); /* "this answer is correct" reuses the brand green — in a quiz tool, green already means "right, go" */
 
   --font-serif: var(--font-sans);
   --font-sans: var(--font-manrope);

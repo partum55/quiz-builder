@@ -71,7 +71,12 @@ export function Tabs({ steps, activeId, onChange }: TabsProps) {
     >
       {steps.map((step, index) => {
         const active = step.id === activeId;
-        const alignment = index === 0 ? "justify-self-start" : index === steps.length - 1 ? "justify-self-end" : "justify-self-center";
+        const alignment =
+          index === 0
+            ? "justify-self-start"
+            : index === steps.length - 1
+              ? "justify-self-end"
+              : "justify-self-center";
         return (
           <button
             key={step.id}

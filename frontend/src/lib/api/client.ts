@@ -7,7 +7,9 @@
  * split is a no-op outside Docker.
  */
 const BASE_URL =
-  typeof window === "undefined" ? (process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL) : process.env.NEXT_PUBLIC_API_URL;
+  typeof window === "undefined"
+    ? (process.env.INTERNAL_API_URL ?? process.env.NEXT_PUBLIC_API_URL)
+    : process.env.NEXT_PUBLIC_API_URL;
 
 interface NestErrorBody {
   statusCode: number;
@@ -16,7 +18,8 @@ interface NestErrorBody {
 }
 
 function isNestErrorBody(value: unknown): value is NestErrorBody {
-  if (typeof value !== "object" || value === null || !("message" in value)) return false;
+  if (typeof value !== "object" || value === null || !("message" in value))
+    return false;
   const message = (value as { message: unknown }).message;
   return typeof message === "string" || Array.isArray(message);
 }
@@ -35,7 +38,10 @@ export class ApiError extends Error {
 }
 
 /** Internal fetch wrapper: builds the URL, sets JSON headers, parses responses, normalizes errors. */
-export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<T> {
   const headers = new Headers(init.headers);
   if (init.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");

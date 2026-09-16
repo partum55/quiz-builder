@@ -4,7 +4,12 @@ export type QuestionType = "BOOLEAN" | "INPUT" | "CHECKBOX";
 export type QuestionInput =
   | { type: "BOOLEAN"; text: string; correctBoolean: boolean }
   | { type: "INPUT"; text: string; correctText: string }
-  | { type: "CHECKBOX"; text: string; options: string[]; correctOptions: string[] };
+  | {
+      type: "CHECKBOX";
+      text: string;
+      options: string[];
+      correctOptions: string[];
+    };
 
 export interface CreateQuizInput {
   title: string;

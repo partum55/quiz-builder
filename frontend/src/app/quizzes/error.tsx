@@ -17,7 +17,7 @@ export default function QuizzesError({
     <>
       <SiteHeader
         action={
-          <LinkButton href="/quizzes/new" icon={<Plus />}>
+          <LinkButton href="/create" icon={<Plus />}>
             New quiz
           </LinkButton>
         }

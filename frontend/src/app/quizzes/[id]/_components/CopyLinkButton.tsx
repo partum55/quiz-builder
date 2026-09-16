@@ -9,7 +9,9 @@ export function CopyLinkButton({ quizId }: { quizId: string }) {
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/take/${quizId}`);
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/take/${quizId}`,
+      );
       toast.show("Quiz link copied.");
     } catch {
       toast.show("Couldn't copy the link. Try again.", "error");

@@ -22,7 +22,10 @@ export function DeleteQuizButton({ id, title }: { id: string; title: string }) {
       toast.show("Quiz deleted.");
       router.push("/quizzes");
     } catch (error) {
-      const message = error instanceof ApiError ? error.messages[0] : "Couldn't delete this quiz. Try again.";
+      const message =
+        error instanceof ApiError
+          ? error.messages[0]
+          : "Couldn't delete this quiz. Try again.";
       toast.show(message, "error");
       setLoading(false);
     }
@@ -30,7 +33,11 @@ export function DeleteQuizButton({ id, title }: { id: string; title: string }) {
 
   return (
     <>
-      <Button variant="danger-ghost" icon={<Trash2 />} onClick={() => setOpen(true)}>
+      <Button
+        variant="danger-ghost"
+        icon={<Trash2 />}
+        onClick={() => setOpen(true)}
+      >
         Delete quiz
       </Button>
       <ConfirmDialog

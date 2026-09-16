@@ -14,7 +14,7 @@ export default async function QuizzesPage() {
     <>
       <SiteHeader
         action={
-          <LinkButton href="/quizzes/new" icon={<Plus />}>
+          <LinkButton href="/create" icon={<Plus />}>
             New quiz
           </LinkButton>
         }
@@ -29,7 +29,7 @@ export default async function QuizzesPage() {
         {quizzes.length === 0 ? (
           <div className="mt-6">
             <EmptyState message="You haven't created any quizzes yet.">
-              <LinkButton href="/quizzes/new" icon={<Plus />}>
+              <LinkButton href="/create" icon={<Plus />}>
                 Create your first quiz
               </LinkButton>
             </EmptyState>

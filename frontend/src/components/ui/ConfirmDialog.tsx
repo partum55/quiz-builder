@@ -31,17 +31,30 @@ export function ConfirmDialog({
       onClose={onCancel}
       title={
         <span className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-danger" aria-hidden="true" />
+          <AlertTriangle
+            className="h-5 w-5 shrink-0 text-danger"
+            aria-hidden="true"
+          />
           {title}
         </span>
       }
     >
       {description && <p className="text-sm text-ink-muted">{description}</p>}
       <div className="mt-6 flex justify-end gap-3">
-        <Button variant="secondary" size="sm" onClick={onCancel} disabled={loading}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onCancel}
+          disabled={loading}
+        >
           Cancel
         </Button>
-        <Button variant="danger" size="sm" onClick={onConfirm} loading={loading}>
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={onConfirm}
+          loading={loading}
+        >
           {confirmLabel}
         </Button>
       </div>

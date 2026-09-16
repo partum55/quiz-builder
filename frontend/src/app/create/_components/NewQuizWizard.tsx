@@ -2,7 +2,14 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronLeft, ChevronRight, Eye, FileText, ListChecks, Trash2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  FileText,
+  ListChecks,
+  Trash2,
+} from "lucide-react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import Button from "@/components/ui/Button";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
@@ -11,7 +18,12 @@ import type { QuizDetail } from "@/lib/api/types";
 import { DetailsStep } from "./DetailsStep";
 import { QuestionsStep } from "./QuestionsStep";
 import { PreviewStep } from "./PreviewStep";
-import { fromQuestionResponses, questionUiSchema, quizFormSchema, type QuizFormValues } from "./formSchema";
+import {
+  fromQuestionResponses,
+  questionUiSchema,
+  quizFormSchema,
+  type QuizFormValues,
+} from "./formSchema";
 
 export const DRAFT_STORAGE_KEY = "quiz-builder:new-quiz-draft";
 
@@ -34,7 +46,11 @@ function isStepId(value: unknown): value is StepId {
 function isStoredDraft(value: unknown): value is StoredDraft {
   if (!value || typeof value !== "object") return false;
   const draft = value as Record<string, unknown>;
-  return typeof draft.title === "string" && Array.isArray(draft.questions) && isStepId(draft.activeStep);
+  return (
+    typeof draft.title === "string" &&
+    Array.isArray(draft.questions) &&
+    isStepId(draft.activeStep)
+  );
 }
 
 function readDraft(): StoredDraft | null {
@@ -57,7 +73,13 @@ function writeDraft(draft: StoredDraft) {
 }
 
 /** Wraps one step's content with the tabpanel ARIA wiring `Tabs` expects, plus a brief mount fade (same idiom as QuestionCard/OptionRow). Remounts (and re-animates) on every `activeStep` change because callers key it by step id. */
-function StepPanel({ stepId, children }: { stepId: StepId; children: ReactNode }) {
+function StepPanel({
+  stepId,
+  children,
+}: {
+  stepId: StepId;
+  children: ReactNode;
+}) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     const frame = requestAnimationFrame(() => setMounted(true));
@@ -144,7 +166,11 @@ export function NewQuizWizard({ quiz }: { quiz?: QuizDetail } = {}) {
   useEffect(() => {
     if (!hydrated || quiz) return;
     const values = methods.getValues();
-    writeDraft({ title: values.title, questions: values.questions, activeStep });
+    writeDraft({
+      title: values.title,
+      questions: values.questions,
+      activeStep,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStep, hydrated]);
 
@@ -162,11 +188,24 @@ export function NewQuizWizard({ quiz }: { quiz?: QuizDetail } = {}) {
   }
 
   const detailsCompleted = (title ?? "").trim().length > 0;
-  const questionsCompleted = (questions ?? []).some((q) => questionUiSchema.safeParse(q).success);
+  const questionsCompleted = (questions ?? []).some(
+    (q) => questionUiSchema.safeParse(q).success,
+  );
 
   const steps: TabItem[] = [
-    { id: "details", label: "Details", icon: <FileText />, completed: detailsCompleted },
-    { id: "questions", label: "Questions", icon: <ListChecks />, completed: questionsCompleted, disabled: !detailsCompleted },
+    {
+      id: "details",
+      label: "Details",
+      icon: <FileText />,
+      completed: detailsCompleted,
+    },
+    {
+      id: "questions",
+      label: "Questions",
+      icon: <ListChecks />,
+      completed: questionsCompleted,
+      disabled: !detailsCompleted,
+    },
     {
       id: "preview",
       label: quiz ? "Preview & save" : "Preview & publish",
@@ -178,18 +217,29 @@ export function NewQuizWizard({ quiz }: { quiz?: QuizDetail } = {}) {
   const activeIndex = STEP_IDS.indexOf(activeStep);
   const previousStep = STEP_IDS[activeIndex - 1];
   const nextStep = STEP_IDS[activeIndex + 1];
-  const nextStepBlocked = nextStep ? (steps.find((s) => s.id === nextStep)?.disabled ?? false) : true;
+  const nextStepBlocked = nextStep
+    ? (steps.find((s) => s.id === nextStep)?.disabled ?? false)
+    : true;
 
   return (
     <FormProvider {...methods}>
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
-          <Button variant="danger-ghost" size="sm" icon={<Trash2 />} onClick={() => setStartOverOpen(true)}>
+          <Button
+            variant="danger-ghost"
+            size="sm"
+            icon={<Trash2 />}
+            onClick={() => setStartOverOpen(true)}
+          >
             {quiz ? "Discard changes" : "Start over"}
           </Button>
         </div>
 
-        <Tabs steps={steps} activeId={activeStep} onChange={(id) => setActiveStep(id as StepId)} />
+        <Tabs
+          steps={steps}
+          activeId={activeStep}
+          onChange={(id) => setActiveStep(id as StepId)}
+        />
 
         <StepPanel key={activeStep} stepId={activeStep}>
           {activeStep === "details" && <DetailsStep />}

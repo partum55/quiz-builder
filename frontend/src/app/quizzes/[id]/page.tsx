@@ -11,7 +11,11 @@ import { QuizDetailTabs } from "./_components/QuizDetailTabs";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", { dateStyle: "medium" });
 
-export default async function QuizDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function QuizDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   let quiz;
@@ -39,12 +43,18 @@ export default async function QuizDetailPage({ params }: { params: Promise<{ id:
           <div>
             <h1 className="font-serif text-2xl text-ink">{quiz.title}</h1>
             <p className="mt-1 text-sm text-ink-muted">
-              {quiz.questions.length} question{quiz.questions.length === 1 ? "" : "s"} ·{" "}
+              {quiz.questions.length} question
+              {quiz.questions.length === 1 ? "" : "s"} ·{" "}
               {dateFormatter.format(new Date(quiz.createdAt))}
             </p>
           </div>
           <div className="flex shrink-0 gap-2">
-            <LinkButton href={`/quizzes/${quiz.id}/edit`} variant="secondary" size="sm" icon={<Pencil />}>
+            <LinkButton
+              href={`/quizzes/${quiz.id}/edit`}
+              variant="secondary"
+              size="sm"
+              icon={<Pencil />}
+            >
               Edit
             </LinkButton>
             <CopyLinkButton quizId={quiz.id} />
@@ -52,7 +62,10 @@ export default async function QuizDetailPage({ params }: { params: Promise<{ id:
         </div>
 
         <div className="mt-8">
-          <QuizDetailTabs questions={quiz.questions} submissions={submissions} />
+          <QuizDetailTabs
+            questions={quiz.questions}
+            submissions={submissions}
+          />
         </div>
 
         <div className="mt-8 border-t border-border pt-6">

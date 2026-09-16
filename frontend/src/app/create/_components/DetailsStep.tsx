@@ -13,7 +13,11 @@ export function DetailsStep() {
 
   return (
     <FormField id="title" label="Title" required error={errors.title?.message}>
-      <Input placeholder="e.g. Capitals of Europe" maxLength={MAX_TEXT_LENGTH} {...register("title")} />
+      <Input
+        placeholder="e.g. Capitals of Europe"
+        maxLength={MAX_TEXT_LENGTH}
+        {...register("title")}
+      />
     </FormField>
   );
 }

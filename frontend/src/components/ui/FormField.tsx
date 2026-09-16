@@ -12,7 +12,14 @@ export interface FormFieldProps {
 }
 
 /** Label + control + hint/error, wired up for accessibility. Callers don't hand-wire ids themselves. */
-export function FormField({ id, label, hint, error, required, children }: FormFieldProps) {
+export function FormField({
+  id,
+  label,
+  hint,
+  error,
+  required,
+  children,
+}: FormFieldProps) {
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
