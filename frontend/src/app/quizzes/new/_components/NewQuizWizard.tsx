@@ -7,10 +7,11 @@ import { FormProvider, useForm, useWatch } from "react-hook-form";
 import Button from "@/components/ui/Button";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Tabs, { type TabItem } from "@/components/ui/Tabs";
+import type { QuizDetail } from "@/lib/api/types";
 import { DetailsStep } from "./DetailsStep";
 import { QuestionsStep } from "./QuestionsStep";
 import { PreviewStep } from "./PreviewStep";
-import { questionUiSchema, quizFormSchema, type QuizFormValues } from "./formSchema";
+import { fromQuestionResponses, questionUiSchema, quizFormSchema, type QuizFormValues } from "./formSchema";
 
 export const DRAFT_STORAGE_KEY = "quiz-builder:new-quiz-draft";
 
@@ -77,17 +78,22 @@ function StepPanel({ stepId, children }: { stepId: StepId; children: ReactNode }
   );
 }
 
-export function NewQuizWizard() {
+/** When `quiz` is passed, the wizard edits that existing quiz instead of creating a new one — pre-filled with its current title/questions, saving via PATCH, and with no localStorage draft (that's only for an in-progress *new* quiz). */
+export function NewQuizWizard({ quiz }: { quiz?: QuizDetail } = {}) {
   const [activeStep, setActiveStep] = useState<StepId>("details");
   const [hydrated, setHydrated] = useState(false);
   const [startOverOpen, setStartOverOpen] = useState(false);
   const activeStepRef = useRef(activeStep);
   activeStepRef.current = activeStep;
 
+  const initialValues: QuizFormValues = quiz
+    ? { title: quiz.title, questions: fromQuestionResponses(quiz.questions) }
+    : EMPTY_VALUES;
+
   const methods = useForm<QuizFormValues>({
     resolver: zodResolver(quizFormSchema),
     mode: "onBlur",
-    defaultValues: EMPTY_VALUES,
+    defaultValues: initialValues,
   });
 
   const title = useWatch({ control: methods.control, name: "title" });
@@ -96,7 +102,13 @@ export function NewQuizWizard() {
   // Load a saved draft only after mount — reading localStorage during render/SSR would
   // make the first client render disagree with the server-rendered HTML (hydration
   // mismatch). The form starts with EMPTY_VALUES, matching what the server rendered.
+  // Editing an existing quiz never reads or writes this draft key — it already has its
+  // own persisted state.
   useEffect(() => {
+    if (quiz) {
+      setHydrated(true);
+      return;
+    }
     const draft = readDraft();
     if (draft) {
       methods.reset({ title: draft.title, questions: draft.questions });
@@ -109,7 +121,7 @@ export function NewQuizWizard() {
   // Debounced write on every field change — watch() fires per keystroke, so don't hit
   // localStorage directly from it.
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || quiz) return;
     let timeout: ReturnType<typeof setTimeout>;
     const subscription = methods.watch((values) => {
       clearTimeout(timeout);
@@ -125,24 +137,26 @@ export function NewQuizWizard() {
       clearTimeout(timeout);
       subscription.unsubscribe();
     };
-  }, [hydrated, methods]);
+  }, [hydrated, methods, quiz]);
 
   // Immediate (non-debounced) write whenever the active tab changes, so switching tabs
   // and refreshing right after never loses which tab was active.
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || quiz) return;
     const values = methods.getValues();
     writeDraft({ title: values.title, questions: values.questions, activeStep });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStep, hydrated]);
 
   function handleStartOver() {
-    try {
-      localStorage.removeItem(DRAFT_STORAGE_KEY);
-    } catch {
-      // ignore
+    if (!quiz) {
+      try {
+        localStorage.removeItem(DRAFT_STORAGE_KEY);
+      } catch {
+        // ignore
+      }
     }
-    methods.reset(EMPTY_VALUES);
+    methods.reset(initialValues);
     setActiveStep("details");
     setStartOverOpen(false);
   }
@@ -153,7 +167,12 @@ export function NewQuizWizard() {
   const steps: TabItem[] = [
     { id: "details", label: "Details", icon: <FileText />, completed: detailsCompleted },
     { id: "questions", label: "Questions", icon: <ListChecks />, completed: questionsCompleted, disabled: !detailsCompleted },
-    { id: "preview", label: "Preview & publish", icon: <Eye />, disabled: !detailsCompleted || !questionsCompleted },
+    {
+      id: "preview",
+      label: quiz ? "Preview & save" : "Preview & publish",
+      icon: <Eye />,
+      disabled: !detailsCompleted || !questionsCompleted,
+    },
   ];
 
   const activeIndex = STEP_IDS.indexOf(activeStep);
@@ -166,7 +185,7 @@ export function NewQuizWizard() {
       <div className="flex flex-col gap-6">
         <div className="flex justify-end">
           <Button variant="danger-ghost" size="sm" icon={<Trash2 />} onClick={() => setStartOverOpen(true)}>
-            Start over
+            {quiz ? "Discard changes" : "Start over"}
           </Button>
         </div>
 
@@ -175,7 +194,7 @@ export function NewQuizWizard() {
         <StepPanel key={activeStep} stepId={activeStep}>
           {activeStep === "details" && <DetailsStep />}
           {activeStep === "questions" && <QuestionsStep />}
-          {activeStep === "preview" && <PreviewStep />}
+          {activeStep === "preview" && <PreviewStep quizId={quiz?.id} />}
         </StepPanel>
 
         <div className="flex justify-between border-t border-border pt-6">
@@ -206,9 +225,13 @@ export function NewQuizWizard() {
         open={startOverOpen}
         onConfirm={handleStartOver}
         onCancel={() => setStartOverOpen(false)}
-        title="Discard this draft?"
-        description="Your unsaved questions and title will be lost."
-        confirmLabel="Start over"
+        title={quiz ? "Discard your changes?" : "Discard this draft?"}
+        description={
+          quiz
+            ? "Your edits will be lost and this quiz will revert to its last saved version."
+            : "Your unsaved questions and title will be lost."
+        }
+        confirmLabel={quiz ? "Discard changes" : "Start over"}
       />
     </FormProvider>
   );

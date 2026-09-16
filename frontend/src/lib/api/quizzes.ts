@@ -23,6 +23,13 @@ export function createQuiz(input: CreateQuizInput): Promise<QuizDetail> {
   });
 }
 
+export function updateQuiz(id: string, input: CreateQuizInput): Promise<QuizDetail> {
+  return apiFetch<QuizDetail>(`/quizzes/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
+}
+
 export function deleteQuiz(id: string): Promise<void> {
   return apiFetch<void>(`/quizzes/${id}`, { method: "DELETE" });
 }

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { LinkButton } from "@/components/ui/Button";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -43,7 +43,12 @@ export default async function QuizDetailPage({ params }: { params: Promise<{ id:
               {dateFormatter.format(new Date(quiz.createdAt))}
             </p>
           </div>
-          <CopyLinkButton quizId={quiz.id} />
+          <div className="flex shrink-0 gap-2">
+            <LinkButton href={`/quizzes/${quiz.id}/edit`} variant="secondary" size="sm" icon={<Pencil />}>
+              Edit
+            </LinkButton>
+            <CopyLinkButton quizId={quiz.id} />
+          </div>
         </div>
 
         <div className="mt-8">

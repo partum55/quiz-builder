@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { QuizzesService } from './quizzes.service.js';
 import { CreateQuizDto } from './dto/create-quiz.dto.js';
@@ -24,6 +24,11 @@ export class QuizzesController {
   @Get(':id')
   findOne(@Param('id') id: string): Promise<QuizDetailDto> {
     return this.quizzesService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: CreateQuizDto): Promise<QuizDetailDto> {
+    return this.quizzesService.update(id, dto);
   }
 
   @Delete(':id')

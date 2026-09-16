@@ -116,6 +116,30 @@ export function toCreateQuizInput(values: QuizFormValues): CreateQuizInput {
   };
 }
 
+/** Inverse of `toQuestionInput` — adapts a persisted question back into the wizard's UI shape, for pre-filling the form when editing an existing quiz. */
+function fromQuestionResponse(question: QuestionResponse): QuestionFormValues {
+  switch (question.type) {
+    case "BOOLEAN":
+      return { type: "BOOLEAN", text: question.text, correctBoolean: question.correctBoolean ?? true };
+    case "INPUT":
+      return { type: "INPUT", text: question.text, correctText: question.correctText ?? "" };
+    case "CHECKBOX": {
+      const options = question.options ?? [];
+      const correct = new Set(question.correctOptions ?? []);
+      return {
+        type: "CHECKBOX",
+        text: question.text,
+        options: options.map((value) => ({ value, correct: correct.has(value) })),
+      };
+    }
+  }
+}
+
+/** Adapts a persisted quiz's questions into wizard form values, for editing. */
+export function fromQuestionResponses(questions: QuestionResponse[]): QuestionFormValues[] {
+  return questions.map(fromQuestionResponse);
+}
+
 /**
  * Adapts in-progress form values into the `QuestionResponse[]` shape the shared
  * `QuestionList` component (built for the detail page) expects, so the Preview step

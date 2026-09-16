@@ -8,7 +8,7 @@ import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { QuestionList } from "@/components/quiz/QuestionList";
 import { ApiError } from "@/lib/api/client";
-import { createQuiz } from "@/lib/api/quizzes";
+import { createQuiz, updateQuiz } from "@/lib/api/quizzes";
 import { DRAFT_STORAGE_KEY } from "./NewQuizWizard";
 import { toCreateQuizInput, toQuestionResponses, type QuizFormValues } from "./formSchema";
 
@@ -26,7 +26,8 @@ function countFieldErrors(errors: FieldErrors): number {
   return count;
 }
 
-export function PreviewStep() {
+/** When `quizId` is set, this step saves changes to that existing quiz instead of creating a new one. */
+export function PreviewStep({ quizId }: { quizId?: string } = {}) {
   const router = useRouter();
   const toast = useToast();
   const methods = useFormContext<QuizFormValues>();
@@ -52,18 +53,24 @@ export function PreviewStep() {
     setSubmitError(null);
     setSubmitting(true);
     try {
-      const created = await createQuiz(toCreateQuizInput(getValues()));
-      try {
-        localStorage.removeItem(DRAFT_STORAGE_KEY);
-      } catch {
-        // ignore — nothing to clean up if storage isn't available
+      const input = toCreateQuizInput(getValues());
+      if (quizId) {
+        await updateQuiz(quizId, input);
+        router.push(`/quizzes/${quizId}`);
+      } else {
+        const created = await createQuiz(input);
+        try {
+          localStorage.removeItem(DRAFT_STORAGE_KEY);
+        } catch {
+          // ignore — nothing to clean up if storage isn't available
+        }
+        router.push(`/quizzes/${created.id}`);
       }
-      router.push(`/quizzes/${created.id}`);
     } catch (error) {
       if (error instanceof ApiError) {
         setSubmitError(error.messages);
       } else {
-        toast.show("Couldn't create this quiz. Try again.", "error");
+        toast.show(quizId ? "Couldn't save changes. Try again." : "Couldn't create this quiz. Try again.", "error");
       }
       setSubmitting(false);
     }
@@ -82,7 +89,7 @@ export function PreviewStep() {
 
       {submitError && (
         <div role="alert" className="rounded-md border border-danger bg-danger-soft p-4 text-sm text-danger">
-          <p className="font-medium">Couldn&apos;t create this quiz</p>
+          <p className="font-medium">{quizId ? "Couldn't save changes" : "Couldn't create this quiz"}</p>
           <ul className="mt-1 list-disc pl-5">
             {submitError.map((message) => (
               <li key={message}>{message}</li>
@@ -100,11 +107,11 @@ export function PreviewStep() {
           disabled={!canPublish}
           onClick={onPublish}
         >
-          {submitting ? "Publishing…" : "Publish quiz"}
+          {quizId ? (submitting ? "Saving…" : "Save changes") : submitting ? "Publishing…" : "Publish quiz"}
         </Button>
         {!canPublish && (
           <p className="text-xs text-danger">
-            Fix {errorCount} issue{errorCount === 1 ? "" : "s"} before publishing.
+            Fix {errorCount} issue{errorCount === 1 ? "" : "s"} before {quizId ? "saving" : "publishing"}.
           </p>
         )}
       </div>

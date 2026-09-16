@@ -114,6 +114,39 @@ export class QuizzesService {
     };
   }
 
+  async update(id: string, dto: CreateQuizDto): Promise<QuizDetailDto> {
+    const quiz = await this.prisma.quiz.findUnique({ where: { id } });
+
+    if (!quiz) {
+      throw new NotFoundException(`Quiz ${id} not found`);
+    }
+
+    // Editing is always allowed, even after respondents have taken this quiz — a
+    // Submission stores its own score/answers as a frozen snapshot at submit time and
+    // has no real FK to Question, so replacing the questions here never touches or
+    // invalidates past results.
+    await this.prisma.quiz.update({
+      where: { id },
+      data: {
+        title: dto.title,
+        questions: {
+          deleteMany: {},
+          create: dto.questions.map((question, index) => ({
+            text: question.text,
+            type: question.type,
+            order: index,
+            correctBoolean: question.correctBoolean,
+            correctText: question.correctText,
+            options: question.options,
+            correctOptions: question.correctOptions,
+          })),
+        },
+      },
+    });
+
+    return this.findOne(id);
+  }
+
   async remove(id: string): Promise<void> {
     const quiz = await this.prisma.quiz.findUnique({ where: { id } });
 

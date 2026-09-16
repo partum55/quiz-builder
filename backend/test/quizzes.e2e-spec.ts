@@ -83,4 +83,50 @@ describe('Quizzes (e2e)', () => {
       })
       .expect(400);
   });
+
+  it('edits a quiz, replacing its questions, even after it has been attempted — without touching past submissions', async () => {
+    const createRes = await request(app.getHttpServer())
+      .post('/quizzes')
+      .send({
+        title: 'Original title',
+        questions: [{ type: 'BOOLEAN', text: 'Original question?', correctBoolean: true }],
+      })
+      .expect(201);
+    const quizId = createRes.body.id;
+    const originalQuestionId = createRes.body.questions[0].id;
+
+    const submitRes = await request(app.getHttpServer())
+      .post(`/quizzes/${quizId}/submissions`)
+      .send({
+        respondentName: 'Ada Lovelace',
+        answers: [{ questionId: originalQuestionId, booleanValue: true }],
+      })
+      .expect(201);
+    expect(submitRes.body.score).toBe(1);
+
+    const updateRes = await request(app.getHttpServer())
+      .patch(`/quizzes/${quizId}`)
+      .send({
+        title: 'Updated title',
+        questions: [{ type: 'INPUT', text: 'Replaced question?', correctText: 'yes' }],
+      })
+      .expect(200);
+    expect(updateRes.body.title).toBe('Updated title');
+    expect(updateRes.body.questions).toHaveLength(1);
+    expect(updateRes.body.questions[0].text).toBe('Replaced question?');
+    expect(updateRes.body.questions[0].id).not.toBe(originalQuestionId);
+
+    // the earlier submission's own score is a frozen snapshot — unaffected by the edit
+    const submissionsRes = await request(app.getHttpServer()).get(`/quizzes/${quizId}/submissions`).expect(200);
+    expect(submissionsRes.body).toEqual([
+      expect.objectContaining({ id: submitRes.body.id, respondentName: 'Ada Lovelace', score: 1 }),
+    ]);
+  });
+
+  it('returns 404 editing a quiz that does not exist', () => {
+    return request(app.getHttpServer())
+      .patch('/quizzes/does-not-exist')
+      .send({ title: 'x', questions: [{ type: 'BOOLEAN', text: 'q?', correctBoolean: true }] })
+      .expect(404);
+  });
 });
